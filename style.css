@@ -1,0 +1,74 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #1e1e1e;
+    font-family: system-ui, sans-serif;
+    color: #eee;
+}
+
+/* ---------- PÁGINA DEL MENÚ ---------- */
+.pagina-menu {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu {
+    text-align: center;
+}
+
+.menu h1 {
+    margin: 0 0 8px;
+    font-size: 3.5rem;
+    letter-spacing: 3px;
+}
+
+.menu p {
+    margin: 0 0 32px;
+    color: #bbb;
+}
+
+.btn {
+    display: inline-block;
+    padding: 14px 52px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    background: #3a7d3a;
+    color: white;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.1s;
+}
+
+/* ---------- PÁGINA DEL JUEGO ---------- */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: #2b2b2b;
+    border-bottom: 2px solid #444;
+}
+
+.nav-marca { font-weight: bold; }
+.nav-acciones { display: flex; gap: 8px; align-items: center; }
+
+.nav-acciones button,
+.btn-salir {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #3a7d3a;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.nav-acciones button:hover,
+.btn-salir:hover { background: #4a9d4a; }
+
+canvas {
+    display: block;
+    margin: 0 auto;
+}

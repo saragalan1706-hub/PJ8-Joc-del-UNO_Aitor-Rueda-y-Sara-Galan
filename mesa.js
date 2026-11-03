@@ -14,14 +14,14 @@ function dibuixarMesa() {
     // Pinta el hueco de los descartes
     ctx.strokeStyle = "rgb(136, 231, 136)";
     ctx.beginPath();
-    ctx.roundRect(750, 250, 80, 100, 6); // NUEVO (ancho 70 -> 80 para que mida como una carta)
+    ctx.roundRect(750, 250, 80, 100, 6); // Hace que mida lo mismo que una carta
     ctx.stroke();
 
     // Rectangulo que delimita la zona del jugador
     ctx.setLineDash([8]);
     ctx.strokeStyle = "rgb(136, 231, 136)";
     ctx.strokeRect(zonaJugador.x, zonaJugador.y, zonaJugador.ancho, zonaJugador.alto);
-    ctx.strokeRect(zonaRival.x, zonaRival.y, zonaRival.ancho, zonaRival.alto); // NUEVO
+    ctx.strokeRect(zonaRival.x, zonaRival.y, zonaRival.ancho, zonaRival.alto);
     ctx.setLineDash([]);
 
 }
@@ -51,7 +51,7 @@ function crearCarta(color, tipo, valor = null) {
 
 function crearMazo() {
     const colores = ["amarillo", "azul", "verde", "rojo"];
-    const cartas = []; // NUEVO (antes llevaba el dorso dentro, ahora el dorso es un objeto aparte)
+    const cartas = []; // Hace del dorso un objeto aparte
 
     // Por cada color le pone un numero a cada carta
     for (const color of colores) {
@@ -78,8 +78,8 @@ function crearMazo() {
 
 // Hace que las cartas aparezcan de manerra aleatoria
 function barajar(cartas) {
-    for (let i = cartas.length - 1; i > 0; i--) {          // NUEVO (ya no hay dorso que proteger en la posición 0)
-        const j = Math.floor(Math.random() * (i + 1));     // NUEVO
+    for (let i = cartas.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
         [cartas[i], cartas[j]] = [cartas[j], cartas[i]];
     }
 }
@@ -88,27 +88,29 @@ function barajar(cartas) {
 const ANCHO = 80, ALTO = 100;
 const ICONO = 36;
 const monton = { x: 650, y: 250 };
-const descarte = { x: 750, y: 250 };                                  // NUEVO
-const zonaJugador = { x: 450, y: 480, ancho: 600, alto: 130 };        // abajo: jugador con turno
-const zonaRival   = { x: 450, y: 60,  ancho: 600, alto: 130 };        // NUEVO (arriba: el otro jugador, boca abajo)
+const descarte = { x: 750, y: 250 };
+const zonaJugador = { x: 450, y: 480, ancho: 600, alto: 130 };
+const zonaRival   = { x: 450, y: 60,  ancho: 600, alto: 130 };
 
-const robar = crearMazo();   // NUEVO (el montón de robar; sustituye a "mazo" y "cartas")
-barajar(robar);              // NUEVO
+const robar = crearMazo();
+barajar(robar);
 
-const dorso = crearCarta("dorso", "dorso"); // NUEVO (la carta que tapa el montón)
-dorso.x = monton.x;                          // NUEVO
-dorso.y = monton.y;                          // NUEVO
+const dorso = crearCarta("dorso", "dorso");
+dorso.x = monton.x;
+dorso.y = monton.y;
 
-const descartes = [];                                  // NUEVO (cartas ya tiradas, se quedan ahí)
-const jugadores = [{ mano: [] }, { mano: [] }];        // NUEVO (jugador 1 y 2)
-let turno = 0;                                         // NUEVO (0 = jugador 1, 1 = jugador 2)
+const descartes = []; // Las cartas jugadas se quedan ahi 
+const jugadores = [{ mano: [] }, { mano: [] }];
+let turno = 0;
 
-// NUEVO: 7 cartas aleatorias a cada jugador
+// __________ REPARTICION DE CARTAS __________
+
+// 7 cartas aleatorias a cada jugador
 for (const j of jugadores) {
     for (let i = 0; i < 7; i++) j.mano.push(robar.pop());
 }
 
-// NUEVO: reparte las cartas de una mano en fila, centradas en su zona
+// Reparte las cartas de una mano en fila, centradas en su zona
 function colocarMano(mano, zona) {
     const sep = Math.min(ANCHO + 10, (zona.ancho - ANCHO) / Math.max(mano.length - 1, 1));
     const total = sep * (mano.length - 1) + ANCHO;
@@ -119,15 +121,16 @@ function colocarMano(mano, zona) {
     });
 }
 
-// NUEVO: el jugador con turno abajo, el otro arriba
+// El jugador con turno abajo, el otro arriba
 function recolocarManos() {
     colocarMano(jugadores[turno].mano, zonaJugador);
     colocarMano(jugadores[1 - turno].mano, zonaRival);
 }
 
 // __________ DIBUJAR UNA CARTA Y EN LA CARTA __________
-function dibujarCarta(c, bocaArriba = true) { // NUEVO (parámetro bocaArriba)
-    // NUEVO: si va boca abajo solo se dibuja el dorso
+
+function dibujarCarta(c, bocaArriba = true) {
+    // Si va boca abajo solo se dibuja el dorso
     if (!bocaArriba) {
         ctx.drawImage(imagenes.dorso, c.x, c.y, ANCHO, ALTO);
         return;
@@ -168,16 +171,16 @@ function redibujar() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     dibuixarMesa();
 
-    if (robar.length) dibujarCarta(dorso);                                   // NUEVO (el montón siempre tapado)
-    descartes.forEach(c => dibujarCarta(c));                                 // NUEVO (descartes boca arriba)
-    jugadores[1 - turno].mano.forEach(c => dibujarCarta(c, false));          // NUEVO (el rival: solo dorsos)
-    jugadores[turno].mano.forEach(c => dibujarCarta(c));                     // NUEVO (el que juega: boca arriba)
-    if (arrastrando) dibujarCarta(arrastrando);                              // NUEVO (la que llevas, encima de todo)
+    if (robar.length) dibujarCarta(dorso); // El montón siempre tapado
+    descartes.forEach(c => dibujarCarta(c)); // Descartes boca arriba
+    jugadores[1 - turno].mano.forEach(c => dibujarCarta(c, false)); // El rival: solo dorsos
+    jugadores[turno].mano.forEach(c => dibujarCarta(c)); // El que juega: boca arriba
+    if (arrastrando) dibujarCarta(arrastrando);
 }
 
 // __________ DRAG AND DROP __________
 let arrastrando = null;
-let origen = null;                // NUEVO ("mano" o "monton": de dónde viene la carta)
+let origen = null;
 let offsetX = 0, offsetY = 0; // Guardan en qué punto de la carta la agarraste
 
 // Detecta dentro del canvas el cursos
@@ -186,37 +189,37 @@ function posicion(e) {
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
 }
 
-// NUEVO: dice si un punto está dentro de un rectángulo {x, y, ancho, alto}
+// Dice si un punto está dentro de un rectángulo {x, y, ancho, alto}
 function dentro(x, y, r) {
     return x >= r.x && x <= r.x + r.ancho && y >= r.y && y <= r.y + r.alto;
 }
-const cajaMonton   = { x: monton.x,   y: monton.y,   ancho: ANCHO, alto: ALTO }; // NUEVO
-const cajaDescarte = { x: descarte.x, y: descarte.y, ancho: ANCHO, alto: ALTO }; // NUEVO
+const cajaMonton   = { x: monton.x,   y: monton.y,   ancho: ANCHO, alto: ALTO };
+const cajaDescarte = { x: descarte.x, y: descarte.y, ancho: ANCHO, alto: ALTO };
 
 canvas.addEventListener("mousedown", e => {
     const { x, y } = posicion(e);
-    const mano = jugadores[turno].mano; // NUEVO (solo se pueden coger cartas de la mano con turno)
+    const mano = jugadores[turno].mano; // Solo se pueden coger cartas de la mano con turno
 
     // Recorre las cartas de la última a la primera. Así se revisa primero la que está más arriba (la que ves encima), que es la que quieres coger.
-    for (let i = mano.length - 1; i >= 0; i--) { // NUEVO (antes recorría "cartas")
+    for (let i = mano.length - 1; i >= 0; i--) {
         const c = mano[i];
         if (x >= c.x && x <= c.x + ANCHO && y >= c.y && y <= c.y + ALTO) {
-            arrastrando = mano.splice(i, 1)[0]; // NUEVO (la carta sale de la mano)
-            origen = "mano";                    // NUEVO
+            arrastrando = mano.splice(i, 1)[0]; // La carta sale de la mano
+            origen = "mano";
             offsetX = x - c.x; // Distancia entre el click y la esquina de la carta
             offsetY = y - c.y;
-            return;                             // NUEVO
+            return;
         }
     }
 
-    // NUEVO: si no has cogido ninguna carta de la mano, mira si robas del montón
+    // Si no has cogido ninguna carta de la mano, mira si robas del montón
     if (robar.length && dentro(x, y, cajaMonton)) {
-        arrastrando = robar.pop();              // NUEVO (la carta sale del montón)
-        arrastrando.x = monton.x;               // NUEVO
-        arrastrando.y = monton.y;               // NUEVO
-        origen = "monton";                      // NUEVO
-        offsetX = x - monton.x;                 // NUEVO
-        offsetY = y - monton.y;                 // NUEVO
+        arrastrando = robar.pop();
+        arrastrando.x = monton.x;
+        arrastrando.y = monton.y;
+        origen = "monton";
+        offsetX = x - monton.x;
+        offsetY = y - monton.y;
     }
 });
 
@@ -229,7 +232,7 @@ canvas.addEventListener("mousemove", e => {
     redibujar();
 });
 
-// NUEVO: al soltar, decide a qué array va la carta según dónde esté su centro
+// Al soltar, decide a qué array va la carta según dónde esté su centro
 function soltar() {
     if (!arrastrando) return;
     const c = arrastrando;
@@ -253,11 +256,11 @@ function soltar() {
 }
 
 // Si sueltas el boton o salir del canvas, la carta no se movera
-canvas.addEventListener("mouseup", soltar);      // NUEVO (antes: arrastrando = null)
-canvas.addEventListener("mouseleave", soltar);   // NUEVO (antes: arrastrando = null)
+canvas.addEventListener("mouseup", soltar);
+canvas.addEventListener("mouseleave", soltar);
 
 // __________ BOTÓN CAMBIAR TURNO __________
-// NUEVO
+
 btnTurno.addEventListener("click", () => {
     turno = 1 - turno;       // 0 pasa a 1 y 1 pasa a 0
     recolocarManos();
@@ -269,4 +272,25 @@ const todas = [...Object.values(imagenes), ...Object.values(iconos)];
 Promise.all(todas.map(img => new Promise(res => {
     img.onload = res;
     img.onerror = res;
-}))).then(() => { recolocarManos(); redibujar(); }); // NUEVO (antes: .then(redibujar))
+}))).then(() => { recolocarManos(); redibujar(); });
+
+// _________ REINICIO DE PARTIDA ___________
+
+document.getElementById("btnReiniciar").addEventListener("click", () => {
+    // Vacia le monton de robar
+    robar.length = 0;
+    robar.push(...crearMazo());
+    barajar(robar);
+    // Vacia el monton de descartes
+    descartes.length = 0;
+    jugadores.forEach(j => j.mano.length = 0);
+    // Reparte 7 cartas a cada jugador
+    for (const j of jugadores) {
+        for (let i = 0; i < 7; i++) j.mano.push(robar.pop());
+    }
+    // recalcula dónde se colocan las cartas de cada mano en el canvas y vuelve a dibujar todo para que se vea el estado nuevo.
+    turno = 0;
+    recolocarManos();
+    redibujar();
+});
+
